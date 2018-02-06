@@ -3,11 +3,13 @@ module GameSocket exposing (..)
 import Phoenix.Socket
 import Phoenix.Channel
 import Types exposing (..)
+import Constants exposing (socketUrl)
 
 
 initialize : Phoenix.Socket.Socket Msg
 initialize =
-    Phoenix.Socket.init "ws://localhost:4000/socket/websocket"
+    socketUrl
+        |> Phoenix.Socket.init
         |> Phoenix.Socket.withDebug
 
 
