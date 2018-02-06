@@ -15,8 +15,8 @@ joinGameRoom : GameName -> Model -> ( Model, Cmd Msg )
 joinGameRoom gameName model =
     let
         channel =
-            "game:"
-                ++ gameName
+            gameName
+                |> gameTopicName
                 |> Phoenix.Channel.init
                 |> Phoenix.Channel.onJoin JoinedChannel
                 |> Phoenix.Channel.onClose ClosedChannel
@@ -28,7 +28,7 @@ joinGameRoom gameName model =
 
         joinedSocketWithCallbacks =
             joinedSocket
-                |> Phoenix.Socket.on "game_start" "game:foo" GameStarted
+                |> Phoenix.Socket.on "game_start" (gameTopicName gameName) GameStarted
     in
         { model | socket = joinedSocketWithCallbacks } ! [ Cmd.map GotServerMessage joinCmd ]
 
@@ -36,3 +36,8 @@ joinGameRoom gameName model =
 listenSubscription : Phoenix.Socket.Socket Msg -> Sub Msg
 listenSubscription socket =
     Phoenix.Socket.listen socket GotServerMessage
+
+
+gameTopicName : GameName -> String
+gameTopicName gameName =
+    "game:" ++ gameName
