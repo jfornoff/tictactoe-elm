@@ -8,16 +8,19 @@ decodeGameUpdate : JD.Value -> Msg
 decodeGameUpdate value =
     let
         decodeResult =
-            JD.decodeValue playerDecoder value
+            JD.decodeValue gameDecoder value
     in
         case decodeResult of
-            Ok player ->
-                player
-                    |> Game
-                    |> GameStarted
+            Ok game ->
+                GameStarted game
 
             Err message ->
                 DecodeError message
+
+
+gameDecoder : JD.Decoder Game
+gameDecoder =
+    JD.map2 Game playerDecoder boardDecoder
 
 
 playerDecoder : JD.Decoder Player
@@ -34,4 +37,38 @@ playerDecoder =
 
                     _ ->
                         JD.fail <| "Unknown current_player value: " ++ toString playerSign
+            )
+
+
+boardDecoder : JD.Decoder Board
+boardDecoder =
+    JD.field "board" <|
+        JD.map3 Board (JD.field "top" rowDecoder) (JD.field "middle" rowDecoder) (JD.field "bottom" rowDecoder)
+
+
+rowDecoder : JD.Decoder BoardRow
+rowDecoder =
+    JD.map3 BoardRow
+        (JD.index 0 boardCellDecoder)
+        (JD.index 1 boardCellDecoder)
+        (JD.index 2 boardCellDecoder)
+
+
+boardCellDecoder : JD.Decoder Cell
+boardCellDecoder =
+    JD.string
+        |> JD.andThen
+            (\cellDefinition ->
+                case cellDefinition of
+                    "" ->
+                        JD.succeed Unset
+
+                    "X" ->
+                        JD.succeed <| Set X
+
+                    "O" ->
+                        JD.succeed <| Set O
+
+                    _ ->
+                        JD.fail <| "Unknown cell value " ++ toString cellDefinition
             )

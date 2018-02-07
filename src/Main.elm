@@ -1,6 +1,7 @@
 module Main exposing (..)
 
 import Html exposing (..)
+import Html.Attributes exposing (..)
 
 
 ---- OUR IMPORTS ----
@@ -15,7 +16,7 @@ import GameSocket
 init : ( Model, Cmd Msg )
 init =
     { socket = GameSocket.initialize
-    , messages = [ "Joining game room!" ]
+    , debugMessages = [ "Joining game room!" ]
     , gameState = NotStarted
     }
         |> GameSocket.joinGameRoom "foo"
@@ -45,6 +46,9 @@ update msg model =
                 GameStarted game ->
                     { model | gameState = Running game }
 
+                DecodeError errorMessage ->
+                    model |> appendMessage errorMessage
+
                 _ ->
                     model
     in
@@ -53,7 +57,7 @@ update msg model =
 
 appendMessage : String -> Model -> Model
 appendMessage message model =
-    { model | messages = message :: model.messages }
+    { model | debugMessages = message :: model.debugMessages }
 
 
 
@@ -62,15 +66,63 @@ appendMessage message model =
 
 view : Model -> Html Msg
 view model =
-    div []
-        [ h1 [] [ text <| "Current game state: " ++ toString model.gameState ]
-        , ol [] <| (model.messages |> List.reverse |> List.map viewMessage)
+    div [ id "viewContainer" ]
+        [ viewDebugMessages model
+        , viewGame model.gameState
         ]
 
 
-viewMessage : String -> Html Msg
-viewMessage message =
-    li [] [ text message ]
+viewDebugMessages : Model -> Html Msg
+viewDebugMessages model =
+    div [] [ div [] <| (model.debugMessages |> List.reverse |> List.map viewDebugMessage) ]
+
+
+viewDebugMessage : String -> Html Msg
+viewDebugMessage message =
+    div [] [ text message ]
+
+
+viewGame : GameState -> Html Msg
+viewGame gameState =
+    case gameState of
+        NotStarted ->
+            h1 [] [ text "Game is not started yet!" ]
+
+        Running game ->
+            div []
+                [ viewBoard game.board
+                ]
+
+
+viewBoard : Board -> Html Msg
+viewBoard board =
+    table []
+        [ viewRow board.topRow
+        , viewRow board.middleRow
+        , viewRow board.bottomRow
+        ]
+
+
+viewRow : BoardRow -> Html Msg
+viewRow row =
+    tr [] [ viewCell row.left, viewCell row.middle, viewCell row.right ]
+
+
+viewCell : Cell -> Html Msg
+viewCell cell =
+    let
+        cellText =
+            case cell of
+                Unset ->
+                    ""
+
+                Set X ->
+                    "X"
+
+                Set O ->
+                    "O"
+    in
+        td [ class "cell" ] [ text cellText ]
 
 
 

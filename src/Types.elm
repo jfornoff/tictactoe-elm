@@ -6,7 +6,7 @@ import Phoenix.Socket
 
 type alias Model =
     { socket : Phoenix.Socket.Socket Msg
-    , messages : List String
+    , debugMessages : List String
     , gameState : GameState
     }
 
@@ -21,8 +21,28 @@ type Player
     | O
 
 
+type alias Board =
+    { topRow : BoardRow
+    , middleRow : BoardRow
+    , bottomRow : BoardRow
+    }
+
+
+type alias BoardRow =
+    { left : Cell
+    , middle : Cell
+    , right : Cell
+    }
+
+
+type Cell
+    = Unset
+    | Set Player
+
+
 type alias Game =
     { currentPlayer : Player
+    , board : Board
     }
 
 

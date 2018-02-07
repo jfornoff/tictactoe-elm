@@ -13,3 +13,19 @@ img {
   margin: 20px 0;
   max-width: 200px;
 }
+
+#viewContainer {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+td.cell {
+  width: 50px;
+  height: 50px;
+  background-color: black;
+  color: white;
+}
