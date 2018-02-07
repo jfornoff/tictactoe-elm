@@ -40,6 +40,30 @@ viewGame model =
                 , viewBoard game.board
                 ]
 
+        Ended outcome board ->
+            div []
+                [ viewPlayingAs model.playingAs
+                , viewBoard board
+                , viewOutcome outcome
+                ]
+
+
+viewOutcome : Outcome -> Html Msg
+viewOutcome outcome =
+    let
+        displayValue =
+            case outcome of
+                Draw ->
+                    "It's a draw! :o"
+
+                PlayerWon X ->
+                    "X won!"
+
+                PlayerWon O ->
+                    "O won!"
+    in
+        div [] [ text displayValue ]
+
 
 viewPlayingAs : PlayingAs -> Html Msg
 viewPlayingAs playingAs =

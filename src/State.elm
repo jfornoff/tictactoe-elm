@@ -43,6 +43,9 @@ update msg model =
         GameUpdate game ->
             ( { model | gameState = Running game }, Cmd.none )
 
+        GameEnd outcome board ->
+            ( { model | gameState = Ended outcome board }, Cmd.none )
+
         DecodeError errorMessage ->
             ( model |> appendMessage ("Decode error:" ++ toString errorMessage), Cmd.none )
 

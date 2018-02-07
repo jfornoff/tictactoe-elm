@@ -18,6 +18,25 @@ decodeGameUpdate msgConstructor value =
                 DecodeError message
 
 
+decodeGameEnd : JD.Value -> Msg
+decodeGameEnd value =
+    let
+        decodeResult =
+            JD.decodeValue gameEndDecoder value
+    in
+        case decodeResult of
+            Ok gameEnd ->
+                gameEnd
+
+            Err message ->
+                DecodeError message
+
+
+gameEndDecoder : JD.Decoder Msg
+gameEndDecoder =
+    JD.map2 GameEnd outcomeDecoder boardDecoder
+
+
 gameDecoder : JD.Decoder Game
 gameDecoder =
     JD.map2 Game playerDecoder boardDecoder
@@ -71,6 +90,26 @@ boardCellDecoder =
 
                     _ ->
                         JD.fail <| "Unknown cell value " ++ toString cellDefinition
+            )
+
+
+outcomeDecoder : JD.Decoder Outcome
+outcomeDecoder =
+    JD.field "outcome" JD.string
+        |> JD.andThen
+            (\outcome ->
+                case outcome of
+                    "Draw" ->
+                        JD.succeed Draw
+
+                    "X wins" ->
+                        JD.succeed <| PlayerWon X
+
+                    "O wins" ->
+                        JD.succeed <| PlayerWon O
+
+                    _ ->
+                        JD.fail <| "Unknown outcome " ++ (toString outcome)
             )
 
 

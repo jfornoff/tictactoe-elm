@@ -22,6 +22,7 @@ type Msg
     | JoinError JD.Value
     | GameStarted Game
     | GameUpdate Game
+    | GameEnd Outcome Board
     | DecodeError String
     | PlayTurn BoardCoordinate
 
@@ -33,6 +34,12 @@ type alias GameName =
 type GameState
     = NotStarted
     | Running Game
+    | Ended Outcome Board
+
+
+type Outcome
+    = Draw
+    | PlayerWon Player
 
 
 type PlayingAs
