@@ -12,15 +12,25 @@ import Types exposing (..)
 
 view : Model -> Html Msg
 view model =
-    div [ id "viewContainer" ]
-        [ viewDebugMessages model
-        , viewGame model
+    div []
+        [ h1 []
+            [ text "TIC TAC TOE" ]
+        , div
+            [ id "viewContainer" ]
+            [ div [ id "viewArea" ]
+                [ viewGame model
+                , viewConsole model
+                ]
+            ]
         ]
 
 
-viewDebugMessages : Model -> Html Msg
-viewDebugMessages model =
-    div [] [ div [] <| (model.debugMessages |> List.reverse |> List.map viewDebugMessage) ]
+viewConsole : Model -> Html Msg
+viewConsole model =
+    div []
+        [ h2 [] [ text "Console" ]
+        , div [ id "console" ] <| (model.debugMessages |> List.reverse |> List.map viewDebugMessage)
+        ]
 
 
 viewDebugMessage : String -> Html Msg
@@ -30,22 +40,26 @@ viewDebugMessage message =
 
 viewGame : Model -> Html Msg
 viewGame model =
-    case model.gameState of
-        NotStarted ->
-            h1 [] [ text "Game is not started yet!" ]
+    let
+        gameContent =
+            case model.gameState of
+                NotStarted ->
+                    h3 [] [ text "Waiting for game start..." ]
 
-        Running game ->
-            div []
-                [ viewPlayingAs model.playingAs
-                , viewBoard game.board
-                ]
+                Running game ->
+                    div []
+                        [ viewPlayingAs model.playingAs
+                        , viewBoard game.board
+                        ]
 
-        Ended outcome board ->
-            div []
-                [ viewPlayingAs model.playingAs
-                , viewBoard board
-                , viewOutcome outcome
-                ]
+                Ended outcome board ->
+                    div []
+                        [ viewPlayingAs model.playingAs
+                        , viewBoard board
+                        , viewOutcome outcome
+                        ]
+    in
+        div [ id "gameContent" ] [ gameContent ]
 
 
 viewOutcome : Outcome -> Html Msg
@@ -79,12 +93,12 @@ viewPlayingAs playingAs =
                 AssignedPlayer O ->
                     "You're playing O"
     in
-        h1 [] [ text displayValue ]
+        h2 [] [ text displayValue ]
 
 
 viewBoard : Board -> Html Msg
 viewBoard board =
-    table []
+    table [ id "board" ]
         [ viewRow board.topRow (BoardCoordinate RowOnTop)
         , viewRow board.middleRow (BoardCoordinate RowInMiddle)
         , viewRow board.bottomRow (BoardCoordinate RowOnBottom)

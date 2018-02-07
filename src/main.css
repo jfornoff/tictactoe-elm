@@ -1,12 +1,15 @@
 body {
-  font-family: 'Source Sans Pro', 'Trebuchet MS', 'Lucida Grande', 'Bitstream Vera Sans', 'Helvetica Neue', sans-serif;
+  font-family: 'Arial', 'Trebuchet MS', 'Lucida Grande', 'Bitstream Vera Sans', 'Helvetica Neue', sans-serif;
   margin: 0;
-  text-align: center;
   color: #293c4b;
 }
 
 h1 {
-  font-size: 30px;
+  text-align: center
+}
+
+h2 {
+  text-align: center
 }
 
 img {
@@ -18,14 +21,35 @@ img {
   width: 100vw;
   height: 100vh;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  flex-direction: column;
+  flex-direction: row;
+}
+
+#viewArea {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+#console {
+  padding: 15px;
+  border: darkgray 2px solid;
+  border-radius: 6px;
+  min-height: 300px;
+}
+
+#gameContent {
+  margin-right: 50px;
 }
 
 td.cell {
-  width: 50px;
-  height: 50px;
+  width: 100px;
+  height: 100px;
   background-color: black;
   color: white;
+
+  text-align: center;
+  font-size: 50px;
 }

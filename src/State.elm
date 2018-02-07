@@ -30,7 +30,13 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         JoinedChannel response ->
-            ( updatePlayingAs model response, Cmd.none )
+            let
+                newModel =
+                    response
+                        |> updatePlayingAs model
+                        |> appendMessage "Joining channel successful!"
+            in
+                ( newModel, Cmd.none )
 
         JoinError response ->
             ( model |> appendMessage ("Joining channel failed with message " ++ toString response), Cmd.none )
