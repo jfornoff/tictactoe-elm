@@ -33,6 +33,9 @@ update msg model =
         GameStarted game ->
             ( { model | gameState = Running game }, Cmd.none )
 
+        GameUpdate game ->
+            ( { model | gameState = Running game }, Cmd.none )
+
         DecodeError errorMessage ->
             ( model |> appendMessage ("Decode error:" ++ toString errorMessage), Cmd.none )
 

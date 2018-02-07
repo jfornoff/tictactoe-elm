@@ -37,7 +37,8 @@ joinGameRoom model =
 
         joinedSocketWithCallbacks =
             joinedSocket
-                |> Socket.on "game_start" (gameTopicName model.gameName) decodeGameUpdate
+                |> Socket.on "game_start" (gameTopicName model.gameName) (decodeGameUpdate GameStarted)
+                |> Socket.on "game_update" (gameTopicName model.gameName) (decodeGameUpdate GameUpdate)
     in
         { model | socket = joinedSocketWithCallbacks } ! [ Cmd.map GotServerMessage joinCmd ]
 

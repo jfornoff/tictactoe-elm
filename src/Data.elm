@@ -4,15 +4,15 @@ import Json.Decode as JD
 import Types exposing (..)
 
 
-decodeGameUpdate : JD.Value -> Msg
-decodeGameUpdate value =
+decodeGameUpdate : (Game -> Msg) -> JD.Value -> Msg
+decodeGameUpdate msgConstructor value =
     let
         decodeResult =
             JD.decodeValue gameDecoder value
     in
         case decodeResult of
             Ok game ->
-                GameStarted game
+                msgConstructor game
 
             Err message ->
                 DecodeError message

@@ -20,6 +20,7 @@ type Msg
     | ChannelError JD.Value
     | JoinError JD.Value
     | GameStarted Game
+    | GameUpdate Game
     | DecodeError String
     | PlayTurn BoardCoordinate
 
