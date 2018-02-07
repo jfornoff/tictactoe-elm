@@ -14,11 +14,8 @@ type alias Model =
 
 
 type Msg
-    = NoOp
-    | GotServerMessage (Phoenix.Socket.Msg Msg)
+    = GotServerResponse (Phoenix.Socket.Msg Msg)
     | JoinedChannel JD.Value
-    | ClosedChannel JD.Value
-    | ChannelError JD.Value
     | JoinError JD.Value
     | GameStarted Game
     | GameUpdate Game

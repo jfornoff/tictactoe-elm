@@ -1,6 +1,7 @@
 module State exposing (init, update, subscriptions)
 
 import Json.Decode as JD
+import Phoenix.Socket
 
 
 -- Our imports
@@ -34,9 +35,6 @@ update msg model =
         JoinError response ->
             ( model |> appendMessage ("Joining channel failed with message " ++ toString response), Cmd.none )
 
-        ChannelError response ->
-            ( model |> appendMessage ("ChannelError " ++ toString response), Cmd.none )
-
         GameStarted game ->
             ( { model | gameState = Running game }, Cmd.none )
 
@@ -52,8 +50,8 @@ update msg model =
         PlayTurn coordinate ->
             GameSocket.sendPlayMessage model coordinate
 
-        _ ->
-            model ! []
+        GotServerResponse _ ->
+            ( model, Cmd.none )
 
 
 appendMessage : String -> Model -> Model

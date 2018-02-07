@@ -28,8 +28,6 @@ joinGameRoom model =
                 |> gameTopicName
                 |> Channel.init
                 |> Channel.onJoin JoinedChannel
-                |> Channel.onClose ClosedChannel
-                |> Channel.onError ChannelError
                 |> Channel.onJoinError JoinError
 
         ( joinedSocket, joinCmd ) =
@@ -41,7 +39,7 @@ joinGameRoom model =
                 |> Socket.on "game_update" (gameTopicName model.gameName) (decodeGameUpdate GameUpdate)
                 |> Socket.on "game_end" (gameTopicName model.gameName) decodeGameEnd
     in
-        { model | socket = joinedSocketWithCallbacks } ! [ Cmd.map GotServerMessage joinCmd ]
+        { model | socket = joinedSocketWithCallbacks } ! [ Cmd.map GotServerResponse joinCmd ]
 
 
 sendPlayMessage : Model -> BoardCoordinate -> ( Model, Cmd Msg )
@@ -52,12 +50,12 @@ sendPlayMessage model (BoardCoordinate rowPosition cellPosition) =
                 |> Push.withPayload (JE.object [ ( "x", JE.int <| cellPositionToNumber cellPosition ), ( "y", JE.int <| rowPositionToNumber rowPosition ) ])
                 |> (flip Socket.push) model.socket
     in
-        { model | socket = newSocket } ! [ Cmd.map GotServerMessage pushCmd ]
+        { model | socket = newSocket } ! [ Cmd.map GotServerResponse pushCmd ]
 
 
 listenSubscription : Socket.Socket Msg -> Sub Msg
 listenSubscription socket =
-    Socket.listen socket GotServerMessage
+    Socket.listen socket GotServerResponse
 
 
 gameTopicName : GameName -> String
