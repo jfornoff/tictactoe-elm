@@ -26,19 +26,16 @@ update msg model =
                     model |> appendMessage "Joined channel successfully!"
 
                 JoinError response ->
-                    model |> appendMessage ("Joining channel failed with message " ++ (toString response))
+                    model |> appendMessage ("Joining channel failed with message " ++ toString response)
 
                 ChannelError response ->
-                    model
-
-                GotServerMessage _ ->
-                    model
+                    model |> appendMessage ("ChannelError " ++ toString response)
 
                 GameStarted game ->
                     { model | gameState = Running game }
 
                 DecodeError errorMessage ->
-                    model |> appendMessage errorMessage
+                    model |> appendMessage ("Decode error:" ++ toString errorMessage)
 
                 _ ->
                     model
