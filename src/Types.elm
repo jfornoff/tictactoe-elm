@@ -6,6 +6,7 @@ import Phoenix.Socket
 
 type alias Model =
     { gameName : String
+    , playingAs : PlayingAs
     , socket : Phoenix.Socket.Socket Msg
     , debugMessages : List String
     , gameState : GameState
@@ -32,6 +33,11 @@ type alias GameName =
 type GameState
     = NotStarted
     | Running Game
+
+
+type PlayingAs
+    = Unassigned
+    | AssignedPlayer Player
 
 
 type Player

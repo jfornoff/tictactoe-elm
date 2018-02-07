@@ -72,3 +72,20 @@ boardCellDecoder =
                     _ ->
                         JD.fail <| "Unknown cell value " ++ toString cellDefinition
             )
+
+
+playingAsDecoder : JD.Decoder Player
+playingAsDecoder =
+    JD.field "playing_as" JD.string
+        |> JD.andThen
+            (\playingAs ->
+                case playingAs of
+                    "X" ->
+                        JD.succeed X
+
+                    "O" ->
+                        JD.succeed O
+
+                    _ ->
+                        JD.fail ("Unknown playing_as value: " ++ playingAs)
+            )

@@ -14,7 +14,7 @@ view : Model -> Html Msg
 view model =
     div [ id "viewContainer" ]
         [ viewDebugMessages model
-        , viewGame model.gameState
+        , viewGame model
         ]
 
 
@@ -28,16 +28,34 @@ viewDebugMessage message =
     div [] [ text message ]
 
 
-viewGame : GameState -> Html Msg
-viewGame gameState =
-    case gameState of
+viewGame : Model -> Html Msg
+viewGame model =
+    case model.gameState of
         NotStarted ->
             h1 [] [ text "Game is not started yet!" ]
 
         Running game ->
             div []
-                [ viewBoard game.board
+                [ viewPlayingAs model.playingAs
+                , viewBoard game.board
                 ]
+
+
+viewPlayingAs : PlayingAs -> Html Msg
+viewPlayingAs playingAs =
+    let
+        displayValue =
+            case playingAs of
+                Unassigned ->
+                    "No side assigned yet"
+
+                AssignedPlayer X ->
+                    "You're playing X"
+
+                AssignedPlayer O ->
+                    "You're playing O"
+    in
+        h1 [] [ text displayValue ]
 
 
 viewBoard : Board -> Html Msg
