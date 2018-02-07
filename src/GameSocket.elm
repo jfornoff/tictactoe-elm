@@ -3,6 +3,7 @@ module GameSocket exposing (..)
 import Phoenix.Socket
 import Phoenix.Channel
 import Types exposing (..)
+import Data exposing (..)
 import Constants exposing (socketUrl)
 
 
@@ -30,7 +31,7 @@ joinGameRoom gameName model =
 
         joinedSocketWithCallbacks =
             joinedSocket
-                |> Phoenix.Socket.on "game_start" (gameTopicName gameName) GameStarted
+                |> Phoenix.Socket.on "game_start" (gameTopicName gameName) decodeGameUpdate
     in
         { model | socket = joinedSocketWithCallbacks } ! [ Cmd.map GotServerMessage joinCmd ]
 

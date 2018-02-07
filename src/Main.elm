@@ -1,7 +1,6 @@
 module Main exposing (..)
 
-import Html exposing (Html, text, div, h1, img)
-import Html.Attributes exposing (src)
+import Html exposing (..)
 
 
 ---- OUR IMPORTS ----
@@ -16,6 +15,8 @@ import GameSocket
 init : ( Model, Cmd Msg )
 init =
     { socket = GameSocket.initialize
+    , messages = [ "Joining game room!" ]
+    , gameState = NotStarted
     }
         |> GameSocket.joinGameRoom "foo"
 
@@ -26,24 +27,33 @@ init =
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    case msg of
-        JoinedChannel response ->
-            model ! []
+    let
+        newModel =
+            case msg of
+                JoinedChannel response ->
+                    model |> appendMessage "Joined channel successfully!"
 
-        JoinError response ->
-            model ! []
+                JoinError response ->
+                    model |> appendMessage ("Joining channel failed with message " ++ (toString response))
 
-        ChannelError response ->
-            model ! []
+                ChannelError response ->
+                    model
 
-        GotServerMessage _ ->
-            model ! []
+                GotServerMessage _ ->
+                    model
 
-        GameStarted response ->
-            model ! []
+                GameStarted game ->
+                    { model | gameState = Running game }
 
-        _ ->
-            model ! []
+                _ ->
+                    model
+    in
+        newModel ! []
+
+
+appendMessage : String -> Model -> Model
+appendMessage message model =
+    { model | messages = message :: model.messages }
 
 
 
@@ -53,9 +63,14 @@ update msg model =
 view : Model -> Html Msg
 view model =
     div []
-        [ img [ src "/logo.svg" ] []
-        , h1 [] [ text "Your Elm App is working!" ]
+        [ h1 [] [ text <| "Current game state: " ++ toString model.gameState ]
+        , ol [] <| (model.messages |> List.reverse |> List.map viewMessage)
         ]
+
+
+viewMessage : String -> Html Msg
+viewMessage message =
+    li [] [ text message ]
 
 
 
