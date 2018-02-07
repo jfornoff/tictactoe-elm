@@ -6,11 +6,12 @@ import Types exposing (..)
 
 init : ( Model, Cmd Msg )
 init =
-    { socket = GameSocket.initialize
+    { gameName = "foo"
+    , socket = GameSocket.initialize
     , debugMessages = [ "Joining game room!" ]
     , gameState = NotStarted
     }
-        |> GameSocket.joinGameRoom "foo"
+        |> GameSocket.joinGameRoom
 
 
 
@@ -19,28 +20,27 @@ init =
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    let
-        newModel =
-            case msg of
-                JoinedChannel response ->
-                    model |> appendMessage "Joined channel successfully!"
+    case msg of
+        JoinedChannel response ->
+            ( model |> appendMessage "Joined channel successfully!", Cmd.none )
 
-                JoinError response ->
-                    model |> appendMessage ("Joining channel failed with message " ++ toString response)
+        JoinError response ->
+            ( model |> appendMessage ("Joining channel failed with message " ++ toString response), Cmd.none )
 
-                ChannelError response ->
-                    model |> appendMessage ("ChannelError " ++ toString response)
+        ChannelError response ->
+            ( model |> appendMessage ("ChannelError " ++ toString response), Cmd.none )
 
-                GameStarted game ->
-                    { model | gameState = Running game }
+        GameStarted game ->
+            ( { model | gameState = Running game }, Cmd.none )
 
-                DecodeError errorMessage ->
-                    model |> appendMessage ("Decode error:" ++ toString errorMessage)
+        DecodeError errorMessage ->
+            ( model |> appendMessage ("Decode error:" ++ toString errorMessage), Cmd.none )
 
-                _ ->
-                    model
-    in
-        newModel ! []
+        PlayTurn coordinate ->
+            GameSocket.sendPlayMessage model coordinate
+
+        _ ->
+            model ! []
 
 
 appendMessage : String -> Model -> Model

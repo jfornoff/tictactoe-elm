@@ -5,10 +5,27 @@ import Phoenix.Socket
 
 
 type alias Model =
-    { socket : Phoenix.Socket.Socket Msg
+    { gameName : String
+    , socket : Phoenix.Socket.Socket Msg
     , debugMessages : List String
     , gameState : GameState
     }
+
+
+type Msg
+    = NoOp
+    | GotServerMessage (Phoenix.Socket.Msg Msg)
+    | JoinedChannel JD.Value
+    | ClosedChannel JD.Value
+    | ChannelError JD.Value
+    | JoinError JD.Value
+    | GameStarted Game
+    | DecodeError String
+    | PlayTurn BoardCoordinate
+
+
+type alias GameName =
+    String
 
 
 type GameState
@@ -35,6 +52,22 @@ type alias BoardRow =
     }
 
 
+type BoardCoordinate
+    = BoardCoordinate RowPosition CellPosition
+
+
+type RowPosition
+    = RowOnTop
+    | RowInMiddle
+    | RowOnBottom
+
+
+type CellPosition
+    = CellOnLeft
+    | CellInMiddle
+    | CellOnRight
+
+
 type Cell
     = Unset
     | Set Player
@@ -44,18 +77,3 @@ type alias Game =
     { currentPlayer : Player
     , board : Board
     }
-
-
-type Msg
-    = NoOp
-    | GotServerMessage (Phoenix.Socket.Msg Msg)
-    | JoinedChannel JD.Value
-    | ClosedChannel JD.Value
-    | ChannelError JD.Value
-    | JoinError JD.Value
-    | GameStarted Game
-    | DecodeError String
-
-
-type alias GameName =
-    String

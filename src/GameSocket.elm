@@ -1,46 +1,89 @@
 module GameSocket exposing (..)
 
-import Phoenix.Socket
-import Phoenix.Channel
+import Phoenix.Socket as Socket
+import Phoenix.Channel as Channel
+import Phoenix.Push as Push
+import Json.Encode as JE
+
+
+--- Our imports
+
 import Types exposing (..)
 import Data exposing (..)
 import Constants exposing (socketUrl)
 
 
-initialize : Phoenix.Socket.Socket Msg
+initialize : Socket.Socket Msg
 initialize =
     socketUrl
-        |> Phoenix.Socket.init
-        |> Phoenix.Socket.withDebug
+        |> Socket.init
+        |> Socket.withDebug
 
 
-joinGameRoom : GameName -> Model -> ( Model, Cmd Msg )
-joinGameRoom gameName model =
+joinGameRoom : Model -> ( Model, Cmd Msg )
+joinGameRoom model =
     let
         channel =
-            gameName
+            model.gameName
                 |> gameTopicName
-                |> Phoenix.Channel.init
-                |> Phoenix.Channel.onJoin JoinedChannel
-                |> Phoenix.Channel.onClose ClosedChannel
-                |> Phoenix.Channel.onError ChannelError
-                |> Phoenix.Channel.onJoinError JoinError
+                |> Channel.init
+                |> Channel.onJoin JoinedChannel
+                |> Channel.onClose ClosedChannel
+                |> Channel.onError ChannelError
+                |> Channel.onJoinError JoinError
 
         ( joinedSocket, joinCmd ) =
-            Phoenix.Socket.join channel model.socket
+            Socket.join channel model.socket
 
         joinedSocketWithCallbacks =
             joinedSocket
-                |> Phoenix.Socket.on "game_start" (gameTopicName gameName) decodeGameUpdate
+                |> Socket.on "game_start" (gameTopicName model.gameName) decodeGameUpdate
     in
         { model | socket = joinedSocketWithCallbacks } ! [ Cmd.map GotServerMessage joinCmd ]
 
 
-listenSubscription : Phoenix.Socket.Socket Msg -> Sub Msg
+sendPlayMessage : Model -> BoardCoordinate -> ( Model, Cmd Msg )
+sendPlayMessage model (BoardCoordinate rowPosition cellPosition) =
+    let
+        ( newSocket, pushCmd ) =
+            Push.init "play" (gameTopicName model.gameName)
+                |> Push.withPayload (JE.object [ ( "x", JE.int <| cellPositionToNumber cellPosition ), ( "y", JE.int <| rowPositionToNumber rowPosition ) ])
+                |> (flip Socket.push) model.socket
+    in
+        { model | socket = newSocket } ! [ Cmd.map GotServerMessage pushCmd ]
+
+
+listenSubscription : Socket.Socket Msg -> Sub Msg
 listenSubscription socket =
-    Phoenix.Socket.listen socket GotServerMessage
+    Socket.listen socket GotServerMessage
 
 
 gameTopicName : GameName -> String
 gameTopicName gameName =
     "game:" ++ gameName
+
+
+rowPositionToNumber : RowPosition -> Int
+rowPositionToNumber position =
+    case position of
+        RowOnBottom ->
+            0
+
+        RowInMiddle ->
+            1
+
+        RowOnTop ->
+            2
+
+
+cellPositionToNumber : CellPosition -> Int
+cellPositionToNumber cellPosition =
+    case cellPosition of
+        CellOnLeft ->
+            0
+
+        CellInMiddle ->
+            1
+
+        CellOnRight ->
+            2

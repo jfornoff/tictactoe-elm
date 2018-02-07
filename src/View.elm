@@ -2,6 +2,7 @@ module View exposing (view)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (..)
 
 
 --- Our imports
@@ -42,19 +43,23 @@ viewGame gameState =
 viewBoard : Board -> Html Msg
 viewBoard board =
     table []
-        [ viewRow board.topRow
-        , viewRow board.middleRow
-        , viewRow board.bottomRow
+        [ viewRow board.topRow (BoardCoordinate RowOnTop)
+        , viewRow board.middleRow (BoardCoordinate RowInMiddle)
+        , viewRow board.bottomRow (BoardCoordinate RowOnBottom)
         ]
 
 
-viewRow : BoardRow -> Html Msg
-viewRow row =
-    tr [] [ viewCell row.left, viewCell row.middle, viewCell row.right ]
+viewRow : BoardRow -> (CellPosition -> BoardCoordinate) -> Html Msg
+viewRow row coordinateConstructor =
+    tr []
+        [ viewCell row.left (coordinateConstructor CellOnLeft)
+        , viewCell row.middle (coordinateConstructor CellInMiddle)
+        , viewCell row.right (coordinateConstructor CellOnRight)
+        ]
 
 
-viewCell : Cell -> Html Msg
-viewCell cell =
+viewCell : Cell -> BoardCoordinate -> Html Msg
+viewCell cell coordinate =
     let
         cellText =
             case cell of
@@ -67,4 +72,4 @@ viewCell cell =
                 Set O ->
                     "O"
     in
-        td [ class "cell" ] [ text cellText ]
+        td [ class "cell", onClick <| PlayTurn coordinate ] [ text cellText ]
