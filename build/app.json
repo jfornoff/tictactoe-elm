@@ -1,0 +1,7 @@
+{
+    "name": "TicTacToe in Elm",
+    "repository": "https://github.com/jfornoff/elm-game-of-life",
+    "buildpacks": [
+        { "url": "https://github.com/hone/heroku-buildpack-static" }
+    ]
+}
