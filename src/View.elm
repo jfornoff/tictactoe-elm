@@ -19,10 +19,18 @@ view model =
             [ id "viewContainer" ]
             [ div [ id "viewArea" ]
                 [ viewGame model
-                , viewConsole model
+                , div []
+                    [ viewConsole model
+                    , viewChannelInput
+                    ]
                 ]
             ]
         ]
+
+
+viewChannelInput : Html Msg
+viewChannelInput =
+    div [ id "channelForm" ] [ input [ type_ "text", onInput UpdateGameNameInput ] [], button [ onClick JoinGame ] [ text "Join Game" ] ]
 
 
 viewConsole : Model -> Html Msg
@@ -43,7 +51,7 @@ viewGame model =
     let
         gameContent =
             case model.gameState of
-                NotStarted ->
+                WaitingForStart ->
                     h3 [] [ text "Waiting for game start..." ]
 
                 Running game ->
@@ -76,7 +84,7 @@ viewOutcome outcome =
                 PlayerWon O ->
                     "O won!"
     in
-        div [] [ text displayValue ]
+        h2 [ id "outcome" ] [ text displayValue ]
 
 
 viewPlayingAs : PlayingAs -> Html Msg

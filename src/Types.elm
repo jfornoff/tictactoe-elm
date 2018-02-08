@@ -5,16 +5,19 @@ import Phoenix.Socket
 
 
 type alias Model =
-    { gameName : String
-    , playingAs : PlayingAs
+    { gameNameInput : String
+    , gameName : String
     , socket : Phoenix.Socket.Socket Msg
     , debugMessages : List String
+    , playingAs : PlayingAs
     , gameState : GameState
     }
 
 
 type Msg
     = GotServerResponse (Phoenix.Socket.Msg Msg)
+    | UpdateGameNameInput String
+    | JoinGame
     | JoinedChannel JD.Value
     | JoinError JD.Value
     | GameStarted Game
@@ -29,7 +32,7 @@ type alias GameName =
 
 
 type GameState
-    = NotStarted
+    = WaitingForStart
     | Running Game
     | Ended Outcome Board
 

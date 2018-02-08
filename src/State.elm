@@ -1,7 +1,6 @@
 module State exposing (init, update, subscriptions)
 
 import Json.Decode as JD
-import Phoenix.Socket
 
 
 -- Our imports
@@ -13,13 +12,18 @@ import Data exposing (..)
 
 init : ( Model, Cmd Msg )
 init =
-    { gameName = "foo"
+    ( initialModel, Cmd.none )
+
+
+initialModel : Model
+initialModel =
+    { gameNameInput = ""
+    , gameName = ""
     , socket = GameSocket.initialize
-    , debugMessages = [ "Joining game room!" ]
+    , debugMessages = []
     , playingAs = Unassigned
-    , gameState = NotStarted
+    , gameState = WaitingForStart
     }
-        |> GameSocket.joinGameRoom
 
 
 
@@ -29,17 +33,23 @@ init =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        UpdateGameNameInput newInputValue ->
+            ( { model | gameNameInput = newInputValue }, Cmd.none )
+
+        JoinGame ->
+            { model | gameName = model.gameNameInput } |> GameSocket.joinGameRoom
+
         JoinedChannel response ->
             let
                 newModel =
                     response
                         |> updatePlayingAs model
-                        |> appendMessage "Joining channel successful!"
+                        |> appendMessage "Joining game successful!"
             in
                 ( newModel, Cmd.none )
 
         JoinError response ->
-            ( model |> appendMessage ("Joining channel failed with message " ++ toString response), Cmd.none )
+            ( model |> appendMessage ("Joining game failed with message " ++ toString response), Cmd.none )
 
         GameStarted game ->
             ( { model | gameState = Running game }, Cmd.none )

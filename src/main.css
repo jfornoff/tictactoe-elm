@@ -53,3 +53,25 @@ td.cell {
   text-align: center;
   font-size: 50px;
 }
+
+#channelForm {
+  display: flex;
+  justify-content: center;
+  align-items: center
+}
+
+input[type="text"] {
+  height: 36px;
+  border: darkgray 2px solid;
+  border-radius: 6px;
+  width: 200px;
+}
+
+button {
+  color: white;
+  background-color: limegreen;
+  font-weight: bold;
+  font-size: 14pt;
+  padding: 10px;
+  border-radius: 6px;
+}
