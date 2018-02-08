@@ -88,25 +88,25 @@ maybeViewGame joinStatus =
                         Ended outcome board ->
                             div []
                                 [ viewBoard board
-                                , viewOutcome outcome
+                                , viewOutcome outcome playingAs
                                 ]
     in
         div [ id "gameContent" ] [ gameContent ]
 
 
-viewOutcome : Outcome -> Html Msg
-viewOutcome outcome =
+viewOutcome : Outcome -> PlayingAs -> Html Msg
+viewOutcome outcome (PlayingAs player) =
     let
         displayValue =
             case outcome of
                 Draw ->
                     "It's a draw! :o"
 
-                PlayerWon X ->
-                    "X won!"
-
-                PlayerWon O ->
-                    "O won!"
+                PlayerWon winner ->
+                    if player == winner then
+                        "You won! Congrats, you won a kids game."
+                    else
+                        "Oh man, you lost. Better luck next time!"
     in
         h2 [ id "outcome" ] [ text displayValue ]
 
