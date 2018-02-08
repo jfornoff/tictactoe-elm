@@ -1,0 +1,7 @@
+{
+    "name": "Tic Tac Toe in Elm",
+    "repository": "https://github.com/jfornoff/tictactoe-elm",
+    "buildpacks": [
+        { "url": "https://github.com/hone/heroku-buildpack-static" }
+    ]
+}
