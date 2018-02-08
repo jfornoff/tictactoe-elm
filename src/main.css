@@ -37,11 +37,12 @@ img {
 
 #console {
   margin: 0px 25px;
-  min-width: 300px;
+  width: 30%;
+  min-width: 200px;
   padding: 15px;
   border: darkgray 2px solid;
   border-radius: 6px;
-  min-height: 300px;
+  min-height: 100px;
 }
 
 #gameContent {
@@ -71,7 +72,7 @@ input[type="text"] {
   width: 200px;
 }
 
-button {
+input[type="submit"] {
   color: white;
   background-color: limegreen;
   font-weight: bold;

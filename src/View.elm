@@ -31,7 +31,7 @@ view model =
 
 viewChannelInput : Html Msg
 viewChannelInput =
-    div [ id "channelForm" ] [ input [ type_ "text", onInput UpdateGameNameInput ] [], button [ onClick JoinGame ] [ text "Join Game" ] ]
+    div [ id "channelForm" ] [ Html.form [ onSubmit JoinGame ] [ input [ type_ "text", onInput UpdateGameNameInput ] [], input [ type_ "submit", value "Join game" ] [] ] ]
 
 
 viewConsole : Model -> Html Msg
