@@ -24,17 +24,20 @@ img {
   align-items: flex-start;
   justify-content: center;
   flex-direction: row;
+  flex-wrap: wrap;
 }
 
-#viewArea {
+.viewArea {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
   flex-wrap: wrap;
   flex-direction: column;
 }
 
 #console {
+  margin: 0px 25px;
+  min-width: 300px;
   padding: 15px;
   border: darkgray 2px solid;
   border-radius: 6px;
@@ -42,7 +45,7 @@ img {
 }
 
 #gameContent {
-  margin-right: 50px;
+  margin: 0px 25px;
 }
 
 td.cell {

@@ -17,11 +17,11 @@ view model =
             [ text "TIC TAC TOE" ]
         , div
             [ id "viewContainer" ]
-            [ div [ id "viewArea" ]
+            [ div [ class "viewArea" ]
                 [ viewJoinStatus model.joinStatus
                 , maybeViewGame model.joinStatus
                 ]
-            , div []
+            , div [ class "viewArea" ]
                 [ viewConsole model
                 , viewChannelInput
                 ]
@@ -49,19 +49,15 @@ viewDebugMessage message =
 
 viewJoinStatus : JoinStatus -> Html Msg
 viewJoinStatus joinStatus =
-    let
-        statusViewContent =
-            case joinStatus of
-                NotJoined ->
-                    h3 [] [ text "Join a game, let's go!" ]
+    case joinStatus of
+        NotJoined ->
+            h3 [] [ text "Join a game, let's go!" ]
 
-                Joining ->
-                    h3 [] [ text "Trying to join..." ]
+        Joining ->
+            h3 [] [ text "Trying to join..." ]
 
-                Joined playingAs _ ->
-                    viewPlayingAs playingAs
-    in
-        statusViewContent
+        Joined playingAs _ ->
+            viewPlayingAs playingAs
 
 
 maybeViewGame : JoinStatus -> Html Msg
@@ -76,22 +72,27 @@ maybeViewGame joinStatus =
                     div [] []
 
                 Joined playingAs gameState ->
-                    case gameState of
-                        WaitingForStart ->
-                            h3 [] [ text "Waiting for game start..." ]
-
-                        Running game ->
-                            div []
-                                [ viewBoard game.board
-                                ]
-
-                        Ended outcome board ->
-                            div []
-                                [ viewBoard board
-                                , viewOutcome outcome playingAs
-                                ]
+                    viewGame gameState playingAs
     in
         div [ id "gameContent" ] [ gameContent ]
+
+
+viewGame : GameState -> PlayingAs -> Html Msg
+viewGame gameState playingAs =
+    case gameState of
+        WaitingForStart ->
+            h3 [] [ text "Waiting for game start..." ]
+
+        Running game ->
+            div []
+                [ viewBoard game.board
+                ]
+
+        Ended outcome board ->
+            div []
+                [ viewBoard board
+                , viewOutcome outcome playingAs
+                ]
 
 
 viewOutcome : Outcome -> PlayingAs -> Html Msg
