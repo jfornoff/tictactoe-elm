@@ -104,7 +104,7 @@ joinGameAs : JD.Value -> Model -> Model
 joinGameAs value model =
     case JD.decodeValue playingAsDecoder value of
         Ok player ->
-            { model | joinStatus = Joined (AssignedPlayer player) WaitingForStart }
+            { model | joinStatus = Joined (PlayingAs player) WaitingForStart }
 
         Err message ->
             appendMessage message model

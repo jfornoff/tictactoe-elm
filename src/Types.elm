@@ -48,8 +48,7 @@ type Outcome
 
 
 type PlayingAs
-    = Unassigned
-    | AssignedPlayer Player
+    = PlayingAs Player
 
 
 type Player

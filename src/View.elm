@@ -116,13 +116,10 @@ viewPlayingAs playingAs =
     let
         displayValue =
             case playingAs of
-                Unassigned ->
-                    "No side assigned yet"
-
-                AssignedPlayer X ->
+                PlayingAs X ->
                     "You're playing X"
 
-                AssignedPlayer O ->
+                PlayingAs O ->
                     "You're playing O"
     in
         h2 [] [ text displayValue ]
