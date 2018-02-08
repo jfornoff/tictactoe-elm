@@ -31,6 +31,7 @@ img {
   align-items: flex-start;
   justify-content: center;
   flex-wrap: wrap;
+  flex-direction: column;
 }
 
 #console {

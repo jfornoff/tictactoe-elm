@@ -9,8 +9,7 @@ type alias Model =
     , gameName : String
     , socket : Phoenix.Socket.Socket Msg
     , debugMessages : List String
-    , playingAs : PlayingAs
-    , gameState : GameState
+    , joinStatus : JoinStatus
     }
 
 
@@ -29,6 +28,12 @@ type Msg
 
 type alias GameName =
     String
+
+
+type JoinStatus
+    = NotJoined
+    | Joining
+    | Joined PlayingAs GameState
 
 
 type GameState

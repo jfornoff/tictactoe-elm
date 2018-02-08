@@ -21,13 +21,29 @@ initialModel =
     , gameName = ""
     , socket = GameSocket.initialize
     , debugMessages = []
-    , playingAs = Unassigned
-    , gameState = WaitingForStart
+    , joinStatus = NotJoined
     }
 
 
 
 ---- UPDATE ----
+
+
+updateOnJoinedGame : Model -> (PlayingAs -> GameState -> JoinStatus) -> Model
+updateOnJoinedGame model updateFn =
+    case model.joinStatus of
+        NotJoined ->
+            model
+
+        Joining ->
+            model
+
+        Joined playingAs gameState ->
+            let
+                newJoinStatus =
+                    updateFn playingAs gameState
+            in
+                { model | joinStatus = newJoinStatus }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -37,13 +53,13 @@ update msg model =
             ( { model | gameNameInput = newInputValue }, Cmd.none )
 
         JoinGame ->
-            { model | gameName = model.gameNameInput, gameState = WaitingForStart } |> GameSocket.joinGameRoom
+            { model | gameName = model.gameNameInput, joinStatus = Joining } |> GameSocket.joinGameRoom
 
         JoinedChannel response ->
             let
                 newModel =
-                    response
-                        |> updatePlayingAs model
+                    model
+                        |> joinGameAs response
                         |> appendMessage "Joining game successful!"
             in
                 ( newModel, Cmd.none )
@@ -52,13 +68,22 @@ update msg model =
             ( model |> appendMessage ("Joining game failed with message " ++ toString response), Cmd.none )
 
         GameStarted game ->
-            ( { model | gameState = Running game }, Cmd.none )
+            ( updateOnJoinedGame model
+                (\playingAs _ -> Joined playingAs (Running game))
+            , Cmd.none
+            )
 
         GameUpdate game ->
-            ( { model | gameState = Running game }, Cmd.none )
+            ( updateOnJoinedGame model
+                (\playingAs _ -> Joined playingAs (Running game))
+            , Cmd.none
+            )
 
         GameEnd outcome board ->
-            ( { model | gameState = Ended outcome board }, Cmd.none )
+            ( updateOnJoinedGame model
+                (\playingAs _ -> Joined playingAs (Ended outcome board))
+            , Cmd.none
+            )
 
         DecodeError errorMessage ->
             ( model |> appendMessage ("Decode error:" ++ toString errorMessage), Cmd.none )
@@ -75,11 +100,11 @@ appendMessage message model =
     { model | debugMessages = message :: model.debugMessages }
 
 
-updatePlayingAs : Model -> JD.Value -> Model
-updatePlayingAs model value =
+joinGameAs : JD.Value -> Model -> Model
+joinGameAs value model =
     case JD.decodeValue playingAsDecoder value of
         Ok player ->
-            { model | playingAs = AssignedPlayer player }
+            { model | joinStatus = Joined (AssignedPlayer player) WaitingForStart }
 
         Err message ->
             appendMessage message model

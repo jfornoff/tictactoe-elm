@@ -18,11 +18,12 @@ view model =
         , div
             [ id "viewContainer" ]
             [ div [ id "viewArea" ]
-                [ viewGame model
-                , div []
-                    [ viewConsole model
-                    , viewChannelInput
-                    ]
+                [ viewJoinStatus model.joinStatus
+                , maybeViewGame model.joinStatus
+                ]
+            , div []
+                [ viewConsole model
+                , viewChannelInput
                 ]
             ]
         ]
@@ -46,26 +47,49 @@ viewDebugMessage message =
     div [] [ text message ]
 
 
-viewGame : Model -> Html Msg
-viewGame model =
+viewJoinStatus : JoinStatus -> Html Msg
+viewJoinStatus joinStatus =
+    let
+        statusViewContent =
+            case joinStatus of
+                NotJoined ->
+                    h3 [] [ text "Join a game, let's go!" ]
+
+                Joining ->
+                    h3 [] [ text "Trying to join..." ]
+
+                Joined playingAs _ ->
+                    viewPlayingAs playingAs
+    in
+        statusViewContent
+
+
+maybeViewGame : JoinStatus -> Html Msg
+maybeViewGame joinStatus =
     let
         gameContent =
-            case model.gameState of
-                WaitingForStart ->
-                    h3 [] [ text "Waiting for game start..." ]
+            case joinStatus of
+                NotJoined ->
+                    div [] []
 
-                Running game ->
-                    div []
-                        [ viewPlayingAs model.playingAs
-                        , viewBoard game.board
-                        ]
+                Joining ->
+                    div [] []
 
-                Ended outcome board ->
-                    div []
-                        [ viewPlayingAs model.playingAs
-                        , viewBoard board
-                        , viewOutcome outcome
-                        ]
+                Joined playingAs gameState ->
+                    case gameState of
+                        WaitingForStart ->
+                            h3 [] [ text "Waiting for game start..." ]
+
+                        Running game ->
+                            div []
+                                [ viewBoard game.board
+                                ]
+
+                        Ended outcome board ->
+                            div []
+                                [ viewBoard board
+                                , viewOutcome outcome
+                                ]
     in
         div [ id "gameContent" ] [ gameContent ]
 
