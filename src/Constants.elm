@@ -3,4 +3,4 @@ module Constants exposing (..)
 
 socketUrl : String
 socketUrl =
-    "ws://tictactoe.janfornoff.com/socket/websocket"
+    "wss://tictactoe.janfornoff.com/socket/websocket"
