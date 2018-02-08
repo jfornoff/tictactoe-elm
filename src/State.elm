@@ -37,7 +37,7 @@ update msg model =
             ( { model | gameNameInput = newInputValue }, Cmd.none )
 
         JoinGame ->
-            { model | gameName = model.gameNameInput } |> GameSocket.joinGameRoom
+            { model | gameName = model.gameNameInput, gameState = WaitingForStart } |> GameSocket.joinGameRoom
 
         JoinedChannel response ->
             let
