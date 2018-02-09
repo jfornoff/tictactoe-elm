@@ -81,11 +81,24 @@ viewGame : GameState -> PlayingAs -> Html Msg
 viewGame gameState playingAs =
     case gameState of
         WaitingForStart ->
-            h3 [] [ text "Waiting for game start..." ]
+            h3 []
+                [ text "Waiting for opponent..."
+                , div [ class "loading" ]
+                    [ span [ id "firstDot" ]
+                        [ text "." ]
+                    , span
+                        [ id "secondDot" ]
+                        [ text "." ]
+                    , span
+                        [ id "thirdDot" ]
+                        [ text "." ]
+                    ]
+                ]
 
         Running game ->
             div []
                 [ viewBoard game.board
+                , viewCurrentlyPlaying game.currentPlayer playingAs
                 ]
 
         Ended outcome board ->
@@ -93,6 +106,18 @@ viewGame gameState playingAs =
                 [ viewBoard board
                 , viewOutcome outcome playingAs
                 ]
+
+
+viewCurrentlyPlaying : Player -> PlayingAs -> Html Msg
+viewCurrentlyPlaying currentlyPlaying (PlayingAs thisPlayer) =
+    let
+        message =
+            if currentlyPlaying == thisPlayer then
+                "Your turn!"
+            else
+                "Opponent playing."
+    in
+        h4 [] [ text message ]
 
 
 viewOutcome : Outcome -> PlayingAs -> Html Msg

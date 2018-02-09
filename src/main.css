@@ -12,6 +12,10 @@ h2 {
   text-align: center
 }
 
+h4 {
+  text-align: center;
+}
+
 img {
   margin: 20px 0;
   max-width: 200px;
@@ -80,3 +84,31 @@ input[type="submit"] {
   padding: 10px;
   border-radius: 6px;
 }
+
+@keyframes loadingdots {
+  0% { color: white;}
+  50% { color: black;}
+  100% { color: white;}
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+}
+
+.loading span {
+  font-size: 60pt;
+  animation-name: loadingdots;
+  animation-duration: 2s;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+}
+
+.loading #secondDot {
+  animation-delay: 0.5s;
+}
+
+.loading #thirdDot {
+  animation-delay: 1.0s;
+}
+
