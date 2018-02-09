@@ -1,7 +1,8 @@
 body {
   font-family: 'Arial', 'Trebuchet MS', 'Lucida Grande', 'Bitstream Vera Sans', 'Helvetica Neue', sans-serif;
   margin: 0;
-  color: #293c4b;
+  background-color: #607D8B;
+  color: white;
 }
 
 h1 {
@@ -21,9 +22,12 @@ img {
   max-width: 200px;
 }
 
-#viewContainer {
+#app {
   width: 100vw;
   height: 100vh;
+}
+
+#viewContainer {
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -32,63 +36,70 @@ img {
 }
 
 .viewArea {
+  margin: 0px 25px;
   display: flex;
-  align-items: center;
+  align-items: stretch;
   justify-content: center;
   flex-wrap: wrap;
   flex-direction: column;
 }
 
 #console {
-  margin: 0px 25px;
-  width: 30%;
   min-width: 200px;
   padding: 15px;
-  border: darkgray 2px solid;
+  border: #BDBDBD 2px solid;
   border-radius: 6px;
   min-height: 100px;
+  box-shadow: 3px 4px #455a64;
+  margin: 5px 0;
 }
 
-#gameContent {
-  margin: 0px 25px;
+#board {
+  margin: auto
 }
 
 td.cell {
   width: 100px;
   height: 100px;
-  background-color: black;
-  color: white;
+  background-color: #CFD8DC;
+  color: #455A64;
+  box-shadow: 3px 4px #455a64;
 
   text-align: center;
   font-size: 50px;
 }
 
 #channelForm {
+  min-height: 36px;
   display: flex;
-  justify-content: center;
-  align-items: center
+  align-items: stretch;
+  margin: 2px;
 }
 
 input[type="text"] {
-  height: 36px;
-  border: darkgray 2px solid;
-  border-radius: 6px;
-  width: 200px;
+  box-shadow: 3px 4px #455a64;
+  border: #BDBDBD 2px solid;
+  color: #212121;
+  background-color: #dbe3e6;
+  border-radius: 6px 0px 0px 6px;
+  min-width: 100px;
 }
 
 input[type="submit"] {
+  box-shadow: 3px 4px #455a64;
   color: white;
-  background-color: limegreen;
+  background-color: #BDBDBD;
+  border-color: #BDBDBD;
   font-weight: bold;
   font-size: 14pt;
   padding: 10px;
-  border-radius: 6px;
+  border-radius: 0px 6px 6px 0px;
 }
 
 @keyframes loadingdots {
-  0% { color: white;}
-  50% { color: black;}
-  100% { color: white;}
+  0% { color: #607D8B;}
+  50% { color: #CFD8DC;};
+  100% { color: #607D8B;}
 }
 
 .loading {
@@ -97,6 +108,7 @@ input[type="submit"] {
 }
 
 .loading span {
+  color: #CFD8DC;
   font-size: 60pt;
   animation-name: loadingdots;
   animation-duration: 2s;
@@ -111,4 +123,3 @@ input[type="submit"] {
 .loading #thirdDot {
   animation-delay: 1.0s;
 }
-
