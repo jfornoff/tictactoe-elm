@@ -13,19 +13,31 @@ import Data exposing (..)
 import Constants exposing (socketUrl)
 
 
+-- Setup
+
+
 initialize : Socket.Socket Msg
 initialize =
-    socketUrl
-        |> Socket.init
-        |> Socket.withDebug
+    Socket.init socketUrl
+
+
+listenSubscription : Socket.Socket Msg -> Sub Msg
+listenSubscription socket =
+    Socket.listen socket GotServerResponse
+
+
+
+-- Contact server
 
 
 joinGameRoom : Model -> ( Model, Cmd Msg )
 joinGameRoom model =
     let
+        topicName =
+            gameTopicName model.gameName
+
         channel =
-            model.gameName
-                |> gameTopicName
+            topicName
                 |> Channel.init
                 |> Channel.onJoin JoinedChannel
                 |> Channel.onJoinError JoinError
@@ -35,27 +47,38 @@ joinGameRoom model =
 
         joinedSocketWithCallbacks =
             joinedSocket
-                |> Socket.on "game_start" (gameTopicName model.gameName) (decodeGameUpdate GameStarted)
-                |> Socket.on "game_update" (gameTopicName model.gameName) (decodeGameUpdate GameUpdate)
-                |> Socket.on "game_end" (gameTopicName model.gameName) decodeGameEnd
+                |> Socket.on "game_start" topicName (decodeGameUpdate GameStarted)
+                |> Socket.on "game_update" topicName (decodeGameUpdate GameUpdate)
+                |> Socket.on "game_end" topicName decodeGameEnd
     in
         { model | socket = joinedSocketWithCallbacks } ! [ Cmd.map GotServerResponse joinCmd ]
 
 
 sendPlayMessage : Model -> BoardCoordinate -> ( Model, Cmd Msg )
-sendPlayMessage model (BoardCoordinate rowPosition cellPosition) =
+sendPlayMessage model coordinate =
     let
+        pushMessage =
+            model.gameName
+                |> gameTopicName
+                |> Push.init "play"
+                |> Push.withPayload (coordinatePayload coordinate)
+
         ( newSocket, pushCmd ) =
-            Push.init "play" (gameTopicName model.gameName)
-                |> Push.withPayload (JE.object [ ( "x", JE.int <| cellPositionToNumber cellPosition ), ( "y", JE.int <| rowPositionToNumber rowPosition ) ])
-                |> (flip Socket.push) model.socket
+            Socket.push pushMessage model.socket
     in
         { model | socket = newSocket } ! [ Cmd.map GotServerResponse pushCmd ]
 
 
-listenSubscription : Socket.Socket Msg -> Sub Msg
-listenSubscription socket =
-    Socket.listen socket GotServerResponse
+
+-- Helpers
+
+
+coordinatePayload : BoardCoordinate -> JE.Value
+coordinatePayload (BoardCoordinate rowPosition cellPosition) =
+    JE.object
+        [ ( "x", JE.int <| cellPositionToNumber cellPosition )
+        , ( "y", JE.int <| rowPositionToNumber rowPosition )
+        ]
 
 
 gameTopicName : GameName -> String
