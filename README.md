@@ -1,3 +1,4 @@
-# Minimal working example to connect to Phoenix Channels in Elm
+# TicTacToe using Phoenix Channels
+Produced for a session at the excellent [Rhein-Main Elixir Meetup](https://www.meetup.com/Elixir-Meetup-Rhein-Main) ([Session link](https://www.meetup.com/Elixir-Meetup-Rhein-Main/events/247183995/)).
 
-Very WIP, just to show how it generally works.
+Uses a deployed version of [the Phoenix TicTacToe server](https://github.com/jfornoff/tictactoe).
